@@ -33,3 +33,20 @@ export const getUser = async (req, res) =>{
         res.status(404).json({"message": error.message, "success": "false"})
     }
 }
+
+// get all user
+export const getAllUser = async (req, res) =>{
+    try {
+        
+        const response = await Users.find()
+        if(!response)
+        {
+            res.status(404).json({"message": "usernames not found", "success": "true"})
+        }
+        console.log(response)
+        res.status(200).json({"message": "user found", "success": "true", data: {"usernames": response.map((item)=> item.username)}})
+        console.log("user login ", username, password)
+    } catch (error) {
+        res.status(404).json({"message": error.message, "success": "false"})
+    }
+}

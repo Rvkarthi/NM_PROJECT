@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, getUser } from "../controllers/login.controller.js";
+import { createUser, getUser, getAllUser } from "../controllers/login.controller.js";
 
 const loginRouter = Router()
 
@@ -8,5 +8,8 @@ loginRouter.post('/signup', createUser)
 
 //login
 loginRouter.post("/login", getUser)
+
+//get all users
+loginRouter.get("/all-users", getAllUser)
 
 export default loginRouter
