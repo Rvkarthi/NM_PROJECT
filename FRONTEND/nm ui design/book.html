@@ -1,0 +1,304 @@
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookWise - Manage Books</title>
+
+  <!-- Tailwind & Fonts -->
+  <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+  <link as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
+    onload="this.rel='stylesheet'" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1173d4",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101922",
+          },
+          fontFamily: { display: ["Manrope"] },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+      <div class="flex items-center gap-4">
+        <div class="text-primary">
+          <svg class="h-8 w-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Library Book Management</h1>
+      </div>
+      <nav class="hidden md:flex gap-6">
+        <a href="dashboard.html"
+          class="text-sm font-medium text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary">Dashboard</a>
+        <a href="book.html" class="text-sm font-medium text-primary dark:text-primary">Books</a>
+        <a href="member_management.html"
+          class="text-sm font-medium text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary">Members</a>
+      </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 overflow-y-auto p-6 md:p-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-8">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Manage Books</h2>
+          <p class="mt-1 text-gray-500 dark:text-gray-400">Add new books to the library or view existing ones.</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          <!-- Left Column: Forms -->
+          <div class="lg:col-span-1 flex flex-col gap-6">
+
+            <!-- Borrow Book Form -->
+            <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-background-dark">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Give Book to User</h3>
+              <form id="borrowBookForm" class="mt-6 space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="username">Username</label>
+                  <input id="username" type="text" placeholder="Enter username" required
+                    class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="borrowBookSelect">Select Book</label>
+                  <select id="borrowBookSelect" required
+                    class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <option value="">-- Select a Book --</option>
+                  </select>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit"
+                    class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    Give Book
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Add Book Form -->
+            <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-background-dark">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add New Book</h3>
+              <form id="addBookForm" class="mt-6 space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="title">Title</label>
+                  <input id="title" type="text" placeholder="Enter book title" required
+                    class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="author">Author</label>
+                  <input id="author" type="text" placeholder="Enter author name" required
+                    class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="quantity">Quantity</label>
+                  <input id="quantity" type="text" placeholder="Enter quantity" required
+                    class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white" />
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit"
+                    class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                    Add Book
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Books Table -->
+          <div class="lg:col-span-2">
+            <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-background-dark">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Author</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Quantity</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr><td colspan="4" class="text-center py-4">Loading books...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Load books and populate table
+    async function loadBooks() {
+      const tableBody = document.getElementById("bookTableBody");
+      tableBody.innerHTML = "<tr><td colspan='4' class='text-center py-4'>Loading...</td></tr>";
+
+      try {
+        const res = await fetch("http://localhost:2222/books/all-books");
+        const { data } = await res.json();
+
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          tableBody.innerHTML = "<tr><td colspan='4' class='text-center py-4'>No books found.</td></tr>";
+          return;
+        }
+
+        tableBody.innerHTML = data.map(book => `
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+            <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">${book.title}</td>
+            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">${book.author}</td>
+            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">${book.quantity}</td>
+            <td class="px-6 py-4 text-right text-sm">
+              <button class="text-primary hover:underline"
+                onclick="editBook(
+                  '${book._id}',
+                  '${book.title.replace(/'/g, "\\'")}',
+                  '${book.author.replace(/'/g, "\\'")}',
+                  '${book.quantity}'
+                )">Edit</button>
+              <button class="bg-red-500 text-white px-2 ml-3 hover:underline" onclick="deleteBook('${book._id}')">Del</button>
+            </td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        console.error(err);
+        tableBody.innerHTML = "<tr><td colspan='4' class='text-center text-red-500 py-4'>Failed to load books.</td></tr>";
+      }
+    }
+
+    // Populate borrow select
+    async function populateBorrowSelect() {
+      try {
+        const res = await fetch("http://localhost:2222/books/all-books");
+        const { data } = await res.json();
+        const select = document.getElementById("borrowBookSelect");
+        select.innerHTML = '<option value="">-- Select a Book --</option>';
+
+        if (data && Array.isArray(data)) {
+          data.forEach(book => {
+            const option = document.createElement("option");
+            option.value = book.title;
+            option.textContent = `${book.title} (${book.quantity})`;
+            select.appendChild(option);
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load books for select:", err);
+      }
+    }
+
+    // Add Book
+    document.getElementById("addBookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const author = document.getElementById("author").value.trim();
+      const quantity = document.getElementById("quantity").value.trim();
+
+      try {
+        const res = await fetch("http://localhost:2222/books/create-book", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, author, quantity }),
+        });
+
+        if (res.ok) {
+          alert("Book added successfully!");
+          e.target.reset();
+          loadBooks();
+          populateBorrowSelect();
+        } else {
+          alert("Failed to add book.");
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+
+    // Borrow Book
+    document.getElementById("borrowBookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const bookTitle = document.getElementById("borrowBookSelect").value;
+
+      if (!username || !bookTitle) {
+        alert("Please enter username and select a book");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:2222/books/borrow-book", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, bookTitle })
+        });
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+          alert("Book successfully given to user!");
+          loadBooks();
+          populateBorrowSelect();
+          e.target.reset();
+        } else {
+          alert("Failed: " + (result.message || "Unknown error"));
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+
+    // Edit Book
+    function editBook(id, oldTitle, oldAuthor, oldQuantity) {
+      const title = prompt("Enter title", oldTitle) || oldTitle;
+      const author = prompt("Enter author", oldAuthor) || oldAuthor;
+      const quantity = prompt("Enter quantity", oldQuantity) || oldQuantity;
+
+      fetch("http://localhost:2222/books/update-book", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId: id, title, author, quantity })
+      }).then(res => {
+        if (res.ok) {
+          alert("Book edited successfully!");
+          loadBooks();
+          populateBorrowSelect();
+        } else alert("Failed to edit book.");
+      }).catch(err => alert("Error: " + err.message));
+    }
+
+    // Delete Book
+    function deleteBook(id) {
+      fetch("http://localhost:2222/books/delete-book", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ book_id: id })
+      }).then(res => {
+        if (res.ok) {
+          alert("Book deleted successfully!");
+          loadBooks();
+          populateBorrowSelect();
+        } else alert("Failed to delete book.");
+      }).catch(err => alert("Error: " + err.message));
+    }
+
+    // Initial load
+    loadBooks();
+    populateBorrowSelect();
+  </script>
+</body>
+
+</html>

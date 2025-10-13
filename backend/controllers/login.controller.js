@@ -1,4 +1,5 @@
 import { Users } from '../models/loginModel.js'
+import { Books } from "../models/books.js"
 
 // create user
 export const createUser = async (req, res) =>{
@@ -33,6 +34,26 @@ export const getUser = async (req, res) =>{
         res.status(404).json({"message": error.message, "success": "false"})
     }
 }
+
+export const getUsersWithBooks = async (req, res) => {
+  try {
+    const users = await Users.find({ "borrow.books": { $exists: true, $ne: null } });
+    const data = [];
+
+    for (const user of users) {
+      const book = await Books.findById(user.borrow.books);
+      data.push({
+        username: user.username,
+        bookTitle: book ? book.title : "Unknown",
+        dueDate: user.borrow.deadline || "-"
+      });
+    }
+
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 // get all user
 export const getAllUser = async (req, res) =>{

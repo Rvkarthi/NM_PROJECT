@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Library User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#1173d4",
+          "background-light": "#f6f7f8",
+          "background-dark": "#101922",
+        },
+        fontFamily: { "display": ["Manrope"] },
+      },
+    },
+  };
+</script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white/50 dark:bg-background-dark/50 p-6 flex flex-col justify-between border-r border-slate-200 dark:border-slate-800">
+    <div>
+      <div class="flex items-center gap-3 mb-8">
+        <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 6.253v11.494m-9-5.747h18" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Library Book Management</h1>
+      </div>
+      <nav class="flex flex-col gap-2">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20">
+          <span class="text-sm font-medium">Dashboard</span>
+        </a>
+        <a href="book.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20">
+          <span class="text-sm font-medium">Books</span>
+        </a>
+        <a href="users.html" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary font-bold">
+          <span class="text-sm font-medium">Users</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Users Management</h2>
+      </div>
+
+      <!-- Search -->
+      <div class="mb-6">
+        <div class="relative">
+          <input id="searchInput" placeholder="Search users..." type="text"
+            class="w-full h-12 pl-4 pr-4 rounded-lg bg-white dark:bg-background-dark/80 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+        </div>
+      </div>
+
+      <!-- All Users Table -->
+      <h3 class="text-xl font-semibold mb-2">All Users</h3>
+      <div class="bg-white dark:bg-background-dark/80 rounded-xl shadow-sm overflow-hidden mb-8">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 dark:bg-slate-900/50">
+              <tr>
+                <th class="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">Username</th>
+              </tr>
+            </thead>
+            <tbody id="allUsersTable">
+              <tr><td class="text-center py-4">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Users with Borrowed Books Table -->
+      <h3 class="text-xl font-semibold mb-2">Users with Borrowed Books</h3>
+      <div class="bg-white dark:bg-background-dark/80 rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 dark:bg-slate-900/50">
+              <tr>
+                <th class="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">Username</th>
+                <th class="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">Book Title</th>
+                <th class="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">Due Date</th>
+              </tr>
+            </thead>
+            <tbody id="usersWithBooksTable">
+              <tr><td colspan="3" class="text-center py-4">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  var allusername;
+async function loadAllUsers() {
+  const tbody = document.getElementById("allUsersTable");
+  tbody.innerHTML = "<tr><td class='text-center py-4'>Loading...</td></tr>";
+
+  try {
+    const res = await fetch("http://localhost:2222/auth/all-users");
+    const { data } = await res.json();
+    if (!data.usernames) {
+      tbody.innerHTML = "<tr><td class='text-center py-4'>No users found.</td></tr>";
+      return;
+    }
+
+    allusername = data.usernames
+
+    tbody.innerHTML = data.usernames.map(u => `
+      <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/20">
+        <td class="px-6 py-4 font-medium">${u}</td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    tbody.innerHTML = "<tr><td class='text-center py-4 text-red-500'>Failed to load users</td></tr>";
+  }
+}
+
+async function loadUsersWithBooks() {
+  const tbody = document.getElementById("usersWithBooksTable");
+  tbody.innerHTML = "<tr><td colspan='3' class='text-center py-4'>Loading...</td></tr>";
+
+  try {
+    const res = await fetch("http://localhost:2222/auth/users-with-books");
+    const { data } = await res.json();
+    console.log(data)
+    if (!data.length) {
+      tbody.innerHTML = "<tr><td colspan='3' class='text-center py-4'>No borrowed books</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = data.map(u => `
+      <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/20">
+        <td class="px-6 py-4 font-medium">${u.username}</td>
+        <td class="px-6 py-4">${u.bookTitle}</td>
+        <td class="px-6 py-4">${u.dueDate ? new Date(u.dueDate).toLocaleDateString() : "-"}</td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    tbody.innerHTML = "<tr><td colspan='3' class='text-center py-4 text-red-500'>Failed to load users</td></tr>";
+  }
+}
+
+
+document.getElementById("searchInput").addEventListener("input", ()=>{
+  const tbody = document.getElementById("allUsersTable");
+  let filter_name = allusername.filter((item) => {return item.includes(document.getElementById("searchInput").value) })
+  tbody.innerHTML = filter_name.map(u => `
+      <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/20">
+        <td class="px-6 py-4 font-medium">${u}</td>
+      </tr>
+    `).join("");
+
+  if(document.getElementById("searchInput").value==="")
+    loadAllUsers()
+})
+
+// Initial load
+loadAllUsers();
+loadUsersWithBooks();
+</script>
+
+</body>
+</html>

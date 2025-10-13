@@ -30,34 +30,77 @@ export const createBook = async (req,res) =>{
 }
 
 // update book quantity
-export const updateBook = async (req,res) =>{
-    try {
-        const {bookId, quantity} = req.body
+export const updateBook = async (req, res) => {
+  try {
+    // Destructure from request body
+    const { bookId, title, author, quantity } = req.body;
 
-        const response = await Users.findOneAndUpdate({_id: bookId},{quantity})
-        res.status(202).json({data: response, success: true})
-    } catch (error) {
-        res.status(404).json({message: error.message, success: false})
+    if (!bookId) {
+      return res.status(400).json({ message: "bookId is required", success: false });
     }
-}
 
-export const borrowBook = async (req,res) =>{
-    try {
-        const {bookId, username} = req.body
-        const date = new Date()
+    const updatedBook = await Books.findOneAndUpdate(
+      { _id: bookId },
+      { title, author, quantity },
+      { new: true } // return the updated document
+    );
 
-        const borrowDetail = await Users.findOneAndUpdate({username}, {
-            borrow: {
-                books: bookId,
-                borrowedAt: format(date, 'dd/MM/yyyy'),
-                deadline: format(addDays(date,30), 'dd/MM/yyyy')
-            }
-        })
-        res.status(202).json({data: borrowDetail, success: true})
-    } catch (error) {
-        res.status(404).json({message: error.message, success: false})
+    if (!updatedBook) {
+      return res.status(404).json({ message: "Book not found", success: false });
     }
-}
+
+    res.status(202).json({ data: updatedBook, success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+//borrow book
+export const borrowBook = async (req, res) => {
+  try {
+    const { bookTitle, username } = req.body;
+    if (!bookTitle || !username) {
+      return res.status(400).json({ message: "Book title and username are required", success: false });
+    }
+
+    // Find the book by title
+    const book = await Books.findOne({ title: bookTitle });
+    if (!book) {
+      return res.status(404).json({ message: "Book not found", success: false });
+    }
+
+    // Check if the book is available
+    if (book.quantity <= 0) {
+      return res.status(400).json({ message: "Book is out of stock", success: false });
+    }
+
+    // Decrement book quantity
+    book.quantity -= 1;
+    await book.save();
+
+    // Add borrow record to user
+    const date = new Date();
+    const borrowDetail = await Users.findOneAndUpdate(
+      { username },
+      {
+        borrow: {
+          books: book._id,
+          borrowedAt: format(date, "dd/MM/yyyy"),
+          deadline: format(addDays(date, 30), "dd/MM/yyyy"),
+        },
+      },
+      { new: true }
+    );
+
+    if (!borrowDetail) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    res.status(202).json({ data: borrowDetail, success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 
 // single user details
 export const userDetails = async (req,res) =>{
@@ -65,6 +108,17 @@ export const userDetails = async (req,res) =>{
         const {username} = req.body
         const response = await Users.findOne({username})
         res.status(200).json({data: response, success: true})
+    } catch (error) {
+        res.status(404).json({message: error.message, success: false})
+    }
+}
+
+// delete book
+export const deleteBook = async (req,res) =>{
+    try {
+        const {book_id} = req.body
+        const response = await Books.deleteOne({_id: book_id})
+        res.status(200).json({message: 'deleted successfully', success: true})
     } catch (error) {
         res.status(404).json({message: error.message, success: false})
     }
