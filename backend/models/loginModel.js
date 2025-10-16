@@ -10,6 +10,10 @@ const loginSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    "email": {
+        type: String,
+        required: true
+    },
     borrow: {
         books: { type: mongoose.Schema.Types.ObjectId, ref: "books" },
         borrowedAt: { type: String},

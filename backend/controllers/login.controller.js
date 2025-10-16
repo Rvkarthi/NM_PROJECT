@@ -35,6 +35,46 @@ export const getUser = async (req, res) =>{
     }
 }
 
+// Get borrowed books of a specific user
+export const getBorrowedBooksByUser = async (req, res) => {
+  try {
+    const { username } = req.params; // username from URL params
+    console.log("params : ", username)
+    const user = await Users.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Check if user has borrowed any book
+    if (!user.borrow || !user.borrow.books) {
+      return res.status(200).json({ 
+        success: true, 
+        username: user.username, 
+        borrowedBooks: [] 
+      });
+    }
+
+    // Fetch book details
+    const borrowedBook = await Books.findById(user.borrow.books);
+
+    res.status(200).json({
+      success: true,
+      username: user.username,
+      borrowedBooks: [
+        {
+          bookTitle: borrowedBook ? borrowedBook.title : "Unknown",
+          author: borrowedBook ? borrowedBook.author : "-",
+          dueDate: user.borrow.deadline || "-"
+        }
+      ]
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const getUsersWithBooks = async (req, res) => {
   try {
     const users = await Users.find({ "borrow.books": { $exists: true, $ne: null } });

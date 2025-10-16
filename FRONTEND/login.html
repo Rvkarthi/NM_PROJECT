@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Login & Borrowed Books</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 95%;
+      padding: 10px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .books {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .book-item {
+      background: #eef2f7;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="login-container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter Username" />
+    <input type="password" id="password" placeholder="Enter Password" />
+    <button onclick="loginUser()">Login</button>
+    <p id="msg" style="color:red;"></p>
+  </div>
+
+  <div class="container" id="books-container" style="display:none;">
+    <h2>Borrowed Books</h2>
+    <div id="books-list" class="books"></div>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const backendURL = "http://localhost:2222"; // your backend base URL
+
+    async function loginUser() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const msg = document.getElementById("msg");
+
+      if (!username || !password) {
+        msg.textContent = "Please fill all fields";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${backendURL}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+
+        if (data.success === "true") {
+          msg.textContent = "";
+          localStorage.setItem("username", username); // store username
+          document.getElementById("login-container").style.display = "none";
+          document.getElementById("books-container").style.display = "block";
+          fetchBorrowedBooks(username);
+        } else {
+          msg.textContent = data.message || "Login failed";
+        }
+      } catch (err) {
+        msg.textContent = "Error connecting to server";
+      }
+    }
+
+    async function fetchBorrowedBooks(username) {
+      try {
+        const res = await fetch(`${backendURL}/auth/borrow/${username}`);
+        const data = await res.json();
+
+        const booksList = document.getElementById("books-list");
+        booksList.innerHTML = "";
+
+        if (data.success && data.borrowedBooks && data.borrowedBooks.length > 0) {
+          data.borrowedBooks.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "book-item";
+            div.innerHTML = `
+              <strong>Book:</strong> ${item.bookTitle} <br>
+              <strong>Author:</strong> ${item.author} <br>
+              <strong>Due Date:</strong> ${item.dueDate}
+            `;
+            booksList.appendChild(div);
+          });
+        } else {
+          booksList.innerHTML = "<p>No borrowed books found.</p>";
+        }
+      } catch (error) {
+        document.getElementById("books-list").innerHTML = "<p>Error loading books.</p>";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("username");
+      document.getElementById("books-container").style.display = "none";
+      document.getElementById("login-container").style.display = "block";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+    }
+  </script>
+</body>
+</html>

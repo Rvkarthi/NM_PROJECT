@@ -37,7 +37,7 @@
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">Library Book Management</h1>
       </div>
       <nav class="flex flex-col gap-2">
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20">
+        <a href="index.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20">
           <span class="text-sm font-medium">Dashboard</span>
         </a>
         <a href="book.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20">
@@ -64,6 +64,25 @@
             class="w-full h-12 pl-4 pr-4 rounded-lg bg-white dark:bg-background-dark/80 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
         </div>
       </div>
+
+      <!-- Add User Form -->
+<h3 class="text-xl font-semibold mb-2">Add New User</h3>
+<form id="addUserForm" class="bg-white dark:bg-background-dark/80 rounded-xl shadow-sm p-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <input id="username" type="text" placeholder="Username" required
+      class="border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-transparent w-full focus:ring-2 focus:ring-primary focus:border-transparent"/>
+    <input id="email" type="email" placeholder="Email" required
+      class="border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-transparent w-full focus:ring-2 focus:ring-primary focus:border-transparent"/>
+    <input id="password" type="password" placeholder="Password" required
+      class="border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-transparent w-full focus:ring-2 focus:ring-primary focus:border-transparent"/>
+  </div>
+  <button type="submit"
+    class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Add User</button>
+</form>
+
+
+<!-- Success & Error Message -->
+<div id="userMessage" class="hidden text-sm mt-2"></div>
 
       <!-- All Users Table -->
       <h3 class="text-xl font-semibold mb-2">All Users</h3>
@@ -169,6 +188,57 @@ document.getElementById("searchInput").addEventListener("input", ()=>{
   if(document.getElementById("searchInput").value==="")
     loadAllUsers()
 })
+
+document.getElementById("addUserForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const messageBox = document.getElementById("userMessage");
+
+  // Clear message box
+  messageBox.classList.add("hidden");
+  messageBox.textContent = "";
+
+  if (!username || !email || !password) {
+    messageBox.textContent = "⚠️ All fields are required";
+    messageBox.className = "text-red-500 text-sm mt-2";
+    messageBox.classList.remove("hidden");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:2222/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      messageBox.textContent = "✅ User added successfully!";
+      messageBox.className = "text-green-500 text-sm mt-2";
+      messageBox.classList.remove("hidden");
+
+      // Clear form
+      document.getElementById("addUserForm").reset();
+
+      // Refresh table
+      loadAllUsers();
+    } else {
+      messageBox.textContent = `❌ ${data.message || "Failed to add user"}`;
+      messageBox.className = "text-red-500 text-sm mt-2";
+      messageBox.classList.remove("hidden");
+    }
+  } catch (error) {
+    messageBox.textContent = "❌ Server error. Please try again later.";
+    messageBox.className = "text-red-500 text-sm mt-2";
+    messageBox.classList.remove("hidden");
+  }
+});
+
 
 // Initial load
 loadAllUsers();
