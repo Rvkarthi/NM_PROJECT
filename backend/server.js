@@ -21,6 +21,6 @@ app.get("/", (req, res)=>{
 })
 
 if(connectDb())
-{app.listen(PORT, ()=>{
-    console.log(`server running in http://localhost:${PORT}`)
+{app.listen(PORT, '0.0.0.0', ()=>{
+    console.log(`server running in ${PORT}`)
 })}
