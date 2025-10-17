@@ -19,7 +19,7 @@ export const allBooks = async (req,res) =>{
 export const createBook = async (req,res) =>{
     try {
         const {title, author, quantity=0} = req.body
-        const response = await Books.create({title, author})
+        const response = await Books.create({title, author, quantity})
         if(!response)
         {
             res.status(404).json({message: "enter title and author name", success: false})
