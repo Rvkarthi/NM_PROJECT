@@ -65,22 +65,14 @@ export const borrowBook = async (req, res) => {
       return res.status(400).json({ message: "Book title and username are required", success: false });
     }
 
-    // Find the book by title
     const book = await Books.findOne({ title: bookTitle });
-    if (!book) {
-      return res.status(404).json({ message: "Book not found", success: false });
-    }
+    if (!book) return res.status(404).json({ message: "Book not found", success: false });
+    if (book.quantity <= 0) return res.status(400).json({ message: "Book is out of stock", success: false });
 
-    // Check if the book is available
-    if (book.quantity <= 0) {
-      return res.status(400).json({ message: "Book is out of stock", success: false });
-    }
-
-    // Decrement book quantity
+    // Decrease quantity
     book.quantity -= 1;
     await book.save();
 
-    // Add borrow record to user
     const date = new Date();
     const borrowDetail = await Users.findOneAndUpdate(
       { username },
@@ -94,22 +86,22 @@ export const borrowBook = async (req, res) => {
       { new: true }
     );
 
-    if (!borrowDetail) {
-      return res.status(404).json({ message: "User not found", success: false });
-    }
+    if (!borrowDetail) return res.status(404).json({ message: "User not found", success: false });
 
-    // Send email to user
+    // ✅ Secure Nodemailer setup
     if (borrowDetail.email) {
       const transporter = nodemailer.createTransport({
-        service: "gmail", // or your email provider
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for 587
         auth: {
-          user: process.env.EMAIL_USER, // your email
-          pass: process.env.EMAIL_PASS, // your email password or app password
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
         },
       });
 
       const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: `"Library System" <${process.env.EMAIL_USER}>`,
         to: borrowDetail.email,
         subject: `Book Borrowed: ${book.title}`,
         html: `
@@ -121,22 +113,19 @@ export const borrowBook = async (req, res) => {
         `,
       };
 
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error("Email not sent:", err);
-        } else {
-          console.log("Email sent:", info.response);
-        }
-      });
+      try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("✅ Email sent:", info.response);
+      } catch (err) {
+        console.error("❌ Email not sent:", err);
+      }
     }
 
     res.status(202).json({ data: borrowDetail, success: true });
-
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-
 
 // single user details
 export const userDetails = async (req,res) =>{
