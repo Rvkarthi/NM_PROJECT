@@ -2,6 +2,10 @@ import { Books } from "../models/books.js"
 import { Users } from "../models/loginModel.js"
 import { format, addDays } from "date-fns"
 import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
+
+// Set your SendGrid API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const allBooks = async (req,res) =>{
     try {
@@ -88,21 +92,11 @@ export const borrowBook = async (req, res) => {
 
     if (!borrowDetail) return res.status(404).json({ message: "User not found", success: false });
 
-    // ✅ Secure Nodemailer setup
+    // ✅ Send email via SendGrid
     if (borrowDetail.email) {
-      const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false, // true for 465, false for 587
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-
-      const mailOptions = {
-        from: `"Library System" <${process.env.EMAIL_USER}>`,
+      const msg = {
         to: borrowDetail.email,
+        from: "your_verified_sender_email@example.com", // Must be verified in SendGrid
         subject: `Book Borrowed: ${book.title}`,
         html: `
           <p>Hi ${borrowDetail.username},</p>
@@ -114,8 +108,8 @@ export const borrowBook = async (req, res) => {
       };
 
       try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("✅ Email sent:", info.response);
+        await sgMail.send(msg);
+        console.log("✅ Email sent via SendGrid to", borrowDetail.email);
       } catch (err) {
         console.error("❌ Email not sent:", err);
       }
