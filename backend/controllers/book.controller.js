@@ -69,15 +69,18 @@ export const borrowBook = async (req, res) => {
       return res.status(400).json({ message: "Book title and username are required", success: false });
     }
 
+    // Find the book
     const book = await Books.findOne({ title: bookTitle });
     if (!book) return res.status(404).json({ message: "Book not found", success: false });
     if (book.quantity <= 0) return res.status(400).json({ message: "Book is out of stock", success: false });
 
-    // Decrease quantity
+    // Decrease book quantity
     book.quantity -= 1;
     await book.save();
 
     const date = new Date();
+
+    // Update user borrow record
     const borrowDetail = await Users.findOneAndUpdate(
       { username },
       {
@@ -92,7 +95,7 @@ export const borrowBook = async (req, res) => {
 
     if (!borrowDetail) return res.status(404).json({ message: "User not found", success: false });
 
-    // ✅ Send email via SendGrid
+    // Send email via SendGrid (do NOT block response on email)
     if (borrowDetail.email) {
       const msg = {
         to: borrowDetail.email,
@@ -107,16 +110,16 @@ export const borrowBook = async (req, res) => {
         `,
       };
 
-      try {
-        await sgMail.send(msg);
-        console.log("✅ Email sent via SendGrid to", borrowDetail.email);
-      } catch (err) {
-        console.error("❌ Email not sent:", err);
-      }
+      // Fire-and-forget: log errors but do not send another response
+      sgMail.send(msg)
+        .then(() => console.log("✅ Email sent via SendGrid to", borrowDetail.email))
+        .catch(err => console.error("❌ Email not sent:", err));
     }
 
+    // Send response once
     res.status(202).json({ data: borrowDetail, success: true });
   } catch (error) {
+    console.error("Error in borrowBook:", error);
     res.status(500).json({ message: error.message, success: false });
   }
 };
