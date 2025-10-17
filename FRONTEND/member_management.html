@@ -131,7 +131,7 @@ async function loadAllUsers() {
   tbody.innerHTML = "<tr><td class='text-center py-4'>Loading...</td></tr>";
 
   try {
-    const res = await fetch("http://localhost:2222/auth/all-users");
+    const res = await fetch("https://nm-project-rynh.onrender.com/auth/all-users");
     const { data } = await res.json();
     if (!data.usernames) {
       tbody.innerHTML = "<tr><td class='text-center py-4'>No users found.</td></tr>";
@@ -155,7 +155,7 @@ async function loadUsersWithBooks() {
   tbody.innerHTML = "<tr><td colspan='3' class='text-center py-4'>Loading...</td></tr>";
 
   try {
-    const res = await fetch("http://localhost:2222/auth/users-with-books");
+    const res = await fetch("https://nm-project-rynh.onrender.com/auth/users-with-books");
     const { data } = await res.json();
     console.log(data)
     if (!data.length) {
@@ -209,7 +209,7 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
   }
 
   try {
-    const res = await fetch("http://localhost:2222/auth/signup", {
+    const res = await fetch("https://nm-project-rynh.onrender.com/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password }),

@@ -150,7 +150,7 @@
       tableBody.innerHTML = "<tr><td colspan='4' class='text-center py-4'>Loading...</td></tr>";
 
       try {
-        const res = await fetch("http://localhost:2222/books/all-books");
+        const res = await fetch("https://nm-project-rynh.onrender.com/books/all-books");
         const { data } = await res.json();
 
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -184,7 +184,7 @@
     // Populate borrow select
     async function populateBorrowSelect() {
       try {
-        const res = await fetch("http://localhost:2222/books/all-books");
+        const res = await fetch("https://nm-project-rynh.onrender.com/books/all-books");
         const { data } = await res.json();
         const select = document.getElementById("borrowBookSelect");
         select.innerHTML = '<option value="">-- Select a Book --</option>';
@@ -210,7 +210,7 @@
       const quantity = document.getElementById("quantity").value.trim();
 
       try {
-        const res = await fetch("http://localhost:2222/books/create-book", {
+        const res = await fetch("https://nm-project-rynh.onrender.com/books/create-book", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title, author, quantity }),
@@ -241,7 +241,7 @@
       }
 
       try {
-        const res = await fetch("http://localhost:2222/books/borrow-book", {
+        const res = await fetch("https://nm-project-rynh.onrender.com/books/borrow-book", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, bookTitle })
@@ -267,7 +267,7 @@
       const author = prompt("Enter author", oldAuthor) || oldAuthor;
       const quantity = prompt("Enter quantity", oldQuantity) || oldQuantity;
 
-      fetch("http://localhost:2222/books/update-book", {
+      fetch("https://nm-project-rynh.onrender.com/books/update-book", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookId: id, title, author, quantity })
@@ -282,7 +282,7 @@
 
     // Delete Book
     function deleteBook(id) {
-      fetch("http://localhost:2222/books/delete-book", {
+      fetch("https://nm-project-rynh.onrender.com/books/delete-book", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ book_id: id })

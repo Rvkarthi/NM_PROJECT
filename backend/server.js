@@ -4,7 +4,7 @@ import loginRouter from './routes/login.routes.js'
 import bookRouter from './routes/books.routes.js'
 import {connectDb} from './models/connect.js'
 
-const PORT = 2222
+const PORT = 3000
 const app = express()
 
 // body and cross orgin

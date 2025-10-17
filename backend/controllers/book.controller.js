@@ -1,6 +1,7 @@
 import { Books } from "../models/books.js"
 import { Users } from "../models/loginModel.js"
 import { format, addDays } from "date-fns"
+import nodemailer from "nodemailer";
 
 export const allBooks = async (req,res) =>{
     try {
@@ -56,6 +57,7 @@ export const updateBook = async (req, res) => {
 };
 
 //borrow book
+// Borrow book and send email
 export const borrowBook = async (req, res) => {
   try {
     const { bookTitle, username } = req.body;
@@ -96,11 +98,45 @@ export const borrowBook = async (req, res) => {
       return res.status(404).json({ message: "User not found", success: false });
     }
 
+    // Send email to user
+    if (borrowDetail.email) {
+      const transporter = nodemailer.createTransport({
+        service: "gmail", // or your email provider
+        auth: {
+          user: process.env.EMAIL_USER, // your email
+          pass: process.env.EMAIL_PASS, // your email password or app password
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: borrowDetail.email,
+        subject: `Book Borrowed: ${book.title}`,
+        html: `
+          <p>Hi ${borrowDetail.username},</p>
+          <p>You have successfully borrowed the book <strong>${book.title}</strong>.</p>
+          <p>Borrowed At: ${format(date, "dd/MM/yyyy")}</p>
+          <p>Deadline: ${format(addDays(date, 30), "dd/MM/yyyy")}</p>
+          <p>Thank you for using our library!</p>
+        `,
+      };
+
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error("Email not sent:", err);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+    }
+
     res.status(202).json({ data: borrowDetail, success: true });
+
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
 
 // single user details
 export const userDetails = async (req,res) =>{
