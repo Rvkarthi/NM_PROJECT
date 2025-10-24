@@ -45,11 +45,11 @@ Library-Book-Management/
 │   ├── config/        # Database config
 │   └── server.js      # Main entry point
 │
-├── frontend/ (optional if React/HTML UI is added)
-│   ├── src/components/
-│   ├── src/pages/
-│   ├── src/services/  # API integration
-│   └── App.js
+├── frontend/ 
+│   ├── index.html
+│   ├── book.html
+│   ├── login.html
+│   └── member_management.html
 │
 └── README.md
 ```
@@ -78,8 +78,8 @@ Library-Book-Management/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/library-book-management.git
-cd library-book-management
+git clone https://github.com/Rvkarthi/NM_PROJECT.git
+cd NM_PROJECT
 ```
 
 ### 2. Install dependencies
@@ -96,7 +96,7 @@ Create a `.env` file inside `backend/` with the following:
 ```
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
-EMAIL_USER=your_email@example.com   # (optional for reminders)
+EMAIL_USER=your_email@example.com   # (for email)
 EMAIL_PASS=your_password
 ```
 
@@ -110,29 +110,7 @@ npm start
 
 ## ✅ Testing
 
-Use **Postman** or **Thunder Client** to test the APIs:
+Use **Postman** or **Thunder Client** to test the APIs
 
-* Add a book → Issue → Return → Check availability updates
 
----
 
-## 📌 Future Enhancements
-
-* Add JWT authentication for users & admins
-* Build a React/Tailwind UI
-* Email/SMS reminders for due dates
-* Dashboard with book statistics
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, open an issue first to discuss what you would like to change.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
